@@ -33,8 +33,14 @@ void setup() {
   pinMode(A0, INPUT);
   Serial.begin(9600);
 
-  ticker.attach_ms(100, flash); // 100ms,(10Hz)ごとに読み取り
-  sma.setVoltageQueueSize(100); // 10秒前の値まで影響を受けるキューのサイズ
+  /*
+   * 60Hzの交流電圧を全波整流して平滑後の波形には120Hzでリプルが乗る。
+   * このリプル電圧の周期は8.333msなのでこの周期の倍数の移動平均を取ればリプルの影響を除ける。
+   *
+   * 8.333msは3周期で25msとなるので、今回は直近25ms間の平均をとる。
+   */
+  sma.setVoltageQueueSize(25);
+  ticker.attach_ms(1, flash); // 100ms,(10Hz)ごとに読み取り
 }
 
 void loop() {
